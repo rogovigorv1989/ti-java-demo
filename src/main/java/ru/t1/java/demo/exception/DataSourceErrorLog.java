@@ -15,8 +15,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @ToString
 @Builder
-@Entity
-@Table(name = "data_source_error_log")
+//@Entity
+//@Table(name = "data_source_error_log")
 public class DataSourceErrorLog {
 
     @Id
