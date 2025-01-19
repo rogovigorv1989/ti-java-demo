@@ -1,36 +1,39 @@
 package ru.t1.java.demo.exception;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+import ru.t1.java.demo.model.Transaction;
 
-import javax.persistence.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
+@jakarta.persistence.Entity
 @Builder
-//@Entity
-//@Table(name = "data_source_error_log")
-public class DataSourceErrorLog {
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "data_source_error_log")
+public class DataSourceErrorLog extends AbstractPersistable<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "exception_stack_trace", columnDefinition = "TEXT", nullable = false)
+    private String exceptionStackTrace;
 
-    @Column(name = "exception_trace", nullable = false, columnDefinition = "TEXT")
-    private String exceptionTrace;
-
-    @Column(name = "message", nullable = false, length = 255)
+    @Column(name = "message", nullable = false)
     private String message;
 
-    @Column(name = "method_signature", nullable = false, length = 255)
+    @Column(name = "method_signature", nullable = false)
     private String methodSignature;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "transaction_id", referencedColumnName = "id")
+    private Transaction transaction;
 }
-

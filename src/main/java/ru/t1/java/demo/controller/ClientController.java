@@ -33,21 +33,4 @@ public class ClientController {
 //            throw new ClientException();
 //        }
     }
-
-    @LogException
-    @Track
-    @GetMapping(value = "/account")
-    @HandlingResult
-    public void toAccount() {
-
-    }
-
-    @LogException
-    @Track
-    @GetMapping(value = "/transaction")
-    @HandlingResult
-    public void toTransaction() {
-
-    }
 }
-
