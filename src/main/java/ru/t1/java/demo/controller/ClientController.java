@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.aop.HandlingResult;
+import ru.t1.java.demo.aop.LogExecution;
 import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.exception.ClientException;
@@ -32,7 +33,6 @@ public class ClientController {
     private final ClientService clientService;
 
     @LogException
-    @Track
     @GetMapping(value = "/client")
     @HandlingResult
     public void doSomething() throws IOException, InterruptedException {
@@ -47,26 +47,45 @@ public class ClientController {
     }
 
     @GetMapping
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public List<Client> getAllClients() {
         return clientService.getAllClients();
     }
 
     @GetMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public Optional<Client> getClientById(@PathVariable Long id) {
         return clientService.getClientById(id);
     }
 
     @PostMapping
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public Client createClient(@RequestBody Client client) {
         return clientService.saveClient(client);
     }
 
     @PutMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public Client updateClient(@PathVariable Long id, @RequestBody Client updatedClient) {
         return clientService.updateClient(id, updatedClient);
     }
 
     @DeleteMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
     public void deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
     }

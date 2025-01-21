@@ -24,9 +24,6 @@ public class DataSourceErrorLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "transaction_id")
-    private Long transactionId;
-
     @Column(name = "exception_stack_trace", length = 16384)
     private String exceptionStackTrace;
 

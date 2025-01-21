@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogException;
+import ru.t1.java.demo.aop.LogExecution;
+import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.service.AccountService;
@@ -29,16 +32,28 @@ public class AccountController {
     private ClientService clientService;
 
     @GetMapping
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public List<Account> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
     @GetMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public Optional<Account> getAccountById(@PathVariable Long id) {
         return accountService.getAccountById(id);
     }
 
     @PostMapping
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         Client client = clientService.findById(account.getClient().getId());
         if (client == null) {
@@ -50,11 +65,18 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
+    @HandlingResult
     public Account updateAccount(@PathVariable Long id, @RequestBody Account updatedAccount) {
         return accountService.updateAccount(id, updatedAccount);
     }
 
     @DeleteMapping("/{id}")
+    @LogException
+    @LogExecution
+    @Track
     public void deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
     }

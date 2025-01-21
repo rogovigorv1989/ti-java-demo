@@ -43,22 +43,6 @@ public class LogAspect {
         errorLog.setMessage(ex.getMessage());
         errorLog.setExceptionStackTrace(getStackTraceAsString(ex));
         errorLog.setMethodSignature(joinPoint.getSignature().toShortString());
-        Object[] args = joinPoint.getArgs();
-        for (Object arg : args) {
-            if (arg != null && arg.getClass().getDeclaredFields() != null) {
-                try {
-                    var field = arg.getClass().getDeclaredField("id");
-                    field.setAccessible(true);
-                    Object transactionId = field.get(arg);
-                    if (transactionId != null) {
-                        errorLog.setTransactionId((Long) transactionId);
-                        break;
-                    }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-        }
 
         try {
             errorLogRepository.save(errorLog);
