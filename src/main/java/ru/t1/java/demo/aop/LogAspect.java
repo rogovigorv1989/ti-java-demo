@@ -2,14 +2,18 @@ package ru.t1.java.demo.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.model.Client;
+import ru.t1.java.demo.model.DataSourceErrorLog;
+import ru.t1.java.demo.model.Transaction;
+import ru.t1.java.demo.repository.DataSourceErrorLogRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 
@@ -18,6 +22,8 @@ import static java.util.Objects.isNull;
 @Component
 @Order(0)
 public class LogAspect {
+    @Autowired
+    DataSourceErrorLogRepository errorLogRepository;
 
     @Pointcut("within(ru.t1.java.demo.*)")
     public void loggingMethods() {
@@ -35,10 +41,35 @@ public class LogAspect {
 //        log.error("ASPECT BEFORE: Call method: {}", joinPoint.getSignature().getName());
 //    }
 
-    @AfterThrowing(pointcut = "@annotation(LogException)")
+    @AfterThrowing(pointcut = "@annotation(LogException)", throwing = "ex")
     @Order(0)
-    public void logExceptionAnnotation(JoinPoint joinPoint) {
-        System.err.println("ASPECT EXCEPTION ANNOTATION: Logging exception: {}" + joinPoint.getSignature().getName());
+    public void logExceptionAnnotation(JoinPoint joinPoint, Exception ex) {
+        DataSourceErrorLog errorLog = new DataSourceErrorLog();
+        errorLog.setMessage(ex.getMessage());
+        errorLog.setExceptionStackTrace(getStackTraceAsString(ex));
+        errorLog.setMethodSignature(joinPoint.getSignature().toShortString());
+        Object[] args = joinPoint.getArgs();
+        for (Object arg : args) {
+            if (arg != null && arg.getClass().getDeclaredFields() != null) {
+                try {
+                    var field = arg.getClass().getDeclaredField("id");
+                    field.setAccessible(true);
+                    Object transactionId = field.get(arg);
+                    if (transactionId != null) {
+                        errorLog.setTransactionId((Long) transactionId);
+                        break;
+                    }
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        try {
+            errorLogRepository.save(errorLog);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @AfterReturning(
@@ -53,4 +84,11 @@ public class LogAspect {
 
     }
 
+    private String getStackTraceAsString(Exception ex) {
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : ex.getStackTrace()) {
+            sb.append(element.toString()).append("\n");
+        }
+        return sb.toString();
+    }
 }

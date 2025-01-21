@@ -10,9 +10,9 @@ public interface AccountService {
 
     Optional<Account> getAccountById(Long id);
 
-    Account createAccount(Account account);
+    Account saveAccount(Account account);
 
-    Optional<Account> updateAccount(Long id, Account accountDetails);
+    Account updateAccount(Long id, Account updatedAccount);
 
     void deleteAccount(Long id);
 }

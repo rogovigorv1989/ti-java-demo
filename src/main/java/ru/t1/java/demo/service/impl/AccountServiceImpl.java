@@ -15,41 +15,46 @@ import ru.t1.java.demo.service.AccountService;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+
 @Slf4j
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService {
+@Service
+class AccountServiceImpl implements AccountService {
     @Autowired
     private final AccountRepository accountRepository;
 
     @Override
     @Transactional
     public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+        return accountRepository.findAllActive();
     }
 
     @Override
     @Transactional
     public Optional<Account> getAccountById(Long id) {
-        return accountRepository.findById(id);
+        return accountRepository.findById(id).filter(account -> !account.getIsDeleted());
     }
 
     @Override
     @Transactional
-    public Account createAccount(Account account) {
+    public Account saveAccount(Account account) {
         return accountRepository.save(account);
     }
 
     @Override
     @Retryable(backoff = @Backoff(delay = 1, maxDelay = 100, random = true))
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Optional<Account> updateAccount(Long id, Account accountDetails) {
-        return Optional.ofNullable(accountRepository.save(accountDetails));
+    public Account updateAccount(Long id, Account updatedAccount) {
+        return accountRepository.findById(id).filter(account -> !account.getIsDeleted()).map(account -> {
+            account.setAccountType(updatedAccount.getAccountType());
+            account.setBalance(updatedAccount.getBalance());
+            return accountRepository.save(account);
+        }).orElseThrow(() -> new IllegalArgumentException("Account not found or deleted"));
     }
 
     @Override
     @Transactional
     public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
+        accountRepository.markAsDeleted(id);
     }
 }

@@ -23,16 +23,19 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
 
     @Override
+    @Transactional
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        return transactionRepository.findAllActive();
     }
 
     @Override
+    @Transactional
     public Optional<Transaction> getTransactionById(Long id) {
-        return transactionRepository.findById(id);
+        return transactionRepository.findById(id).filter(transaction -> !transaction.getIsDeleted());
     }
 
     @Override
+    @Transactional
     public Transaction createTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
@@ -40,12 +43,18 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Retryable(backoff = @Backoff(delay = 1, maxDelay = 100, random = true))
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Optional<Transaction> updateTransaction(Long id, Transaction transactionDetails) {
-        return Optional.ofNullable(transactionRepository.save(transactionDetails));
+    public Transaction updateTransaction(Long id, Transaction updatedTransaction) {
+        return transactionRepository.findById(id).filter(transaction ->
+                !transaction.getIsDeleted()).map(transaction -> {
+            transaction.setTransactionAmount(updatedTransaction.getTransactionAmount());
+            transaction.setTransactionTime(updatedTransaction.getTransactionTime());
+            return transactionRepository.save(transaction);
+        }).orElseThrow(() -> new IllegalArgumentException("Transaction not found or deleted"));
     }
 
     @Override
+    @Transactional
     public void deleteTransaction(Long id) {
-        transactionRepository.deleteById(id);
+        transactionRepository.markAsDeleted(id);
     }
 }

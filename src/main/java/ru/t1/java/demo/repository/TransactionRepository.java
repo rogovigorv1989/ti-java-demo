@@ -1,23 +1,19 @@
 package ru.t1.java.demo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.t1.java.demo.model.Transaction;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    @Override
-    List<Transaction> findAll();
+    @Query("SELECT t FROM Transaction t WHERE t.isDeleted = false")
+    List<Transaction> findAllActive();
 
-    @Override
-    Optional<Transaction> findById(Long id);
-
-    @Override
-    Transaction save(Transaction transaction);
-
-    @Override
-    void delete(Transaction transaction);
+    @Modifying
+    @Query("UPDATE Transaction t SET t.isDeleted = true WHERE t.id = :id")
+    void markAsDeleted(Long id);
 }

@@ -1,19 +1,23 @@
 package ru.t1.java.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.service.TransactionService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/transactions")
-public class TransactionController {
-
-    @Autowired
-    private TransactionService transactionService;
+@RequestMapping("/transactions")
+@Slf4j
+@RequiredArgsConstructor
+class TransactionController {
+    private final TransactionService transactionService;
 
     @GetMapping
     public List<Transaction> getAllTransactions() {
@@ -21,23 +25,24 @@ public class TransactionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
-        return ResponseEntity.of(transactionService.getTransactionById(id));
+    public Optional<Transaction> getTransactionById(@PathVariable Long id) {
+        return transactionService.getTransactionById(id);
     }
 
     @PostMapping
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
-        return transactionService.createTransaction(transaction);
+    @LogException
+    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
+        Transaction savedTransaction = transactionService.createTransaction(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody Transaction transactionDetails) {
-        return ResponseEntity.of(transactionService.updateTransaction(id, transactionDetails));
+    public Transaction updateTransaction(@PathVariable Long id, @RequestBody Transaction updatedTransaction) {
+        return transactionService.updateTransaction(id, updatedTransaction);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+    public void deleteTransaction(@PathVariable Long id) {
         transactionService.deleteTransaction(id);
-        return ResponseEntity.noContent().build();
     }
 }
