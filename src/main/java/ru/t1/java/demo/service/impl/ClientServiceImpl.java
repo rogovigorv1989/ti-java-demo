@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.t1.java.demo.aop.HandlingResult;
+import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.dto.ClientDto;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.repository.ClientRepository;
@@ -57,18 +59,24 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public List<Client> getAllClients() {
         return clientRepository.findAllActive();
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Optional<Client> getClientById(Long id) {
         return clientRepository.findById(id).filter(client -> !client.isDeleted());
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Client saveClient(Client client) {
         return clientRepository.save(client);
     }
@@ -76,6 +84,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Retryable(backoff = @Backoff(delay = 1, maxDelay = 100, random = true))
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Track
+    @HandlingResult
     public Client updateClient(Long id, Client updatedClient) {
         return clientRepository.findById(id).filter(client -> !client.isDeleted()).map(client -> {
             client.setFirstName(updatedClient.getFirstName());
@@ -87,12 +97,15 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public void deleteClient(Long id) {
         clientRepository.markAsDeleted(id);
     }
 
     @Override
     @Transactional
+    @Track
     public Client findById(Long id) {
         return clientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Client not found"));
     }

@@ -8,6 +8,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.t1.java.demo.aop.HandlingResult;
+import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.service.AccountService;
@@ -25,18 +27,24 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public List<Account> getAllAccounts() {
         return accountRepository.findAllActive();
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Optional<Account> getAccountById(Long id) {
         return accountRepository.findById(id).filter(account -> !account.getIsDeleted());
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Account saveAccount(Account account) {
         return accountRepository.save(account);
     }
@@ -44,6 +52,8 @@ class AccountServiceImpl implements AccountService {
     @Override
     @Retryable(backoff = @Backoff(delay = 1, maxDelay = 100, random = true))
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Track
+    @HandlingResult
     public Account updateAccount(Long id, Account updatedAccount) {
         return accountRepository.findById(id).filter(account -> !account.getIsDeleted()).map(account -> {
             account.setAccountType(updatedAccount.getAccountType());
@@ -54,6 +64,8 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public void deleteAccount(Long id) {
         accountRepository.markAsDeleted(id);
     }

@@ -8,6 +8,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.t1.java.demo.aop.HandlingResult;
+import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.repository.TransactionRepository;
 import ru.t1.java.demo.service.TransactionService;
@@ -24,18 +26,24 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAllActive();
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Optional<Transaction> getTransactionById(Long id) {
         return transactionRepository.findById(id).filter(transaction -> !transaction.getIsDeleted());
     }
 
     @Override
     @Transactional
+    @Track
+    @HandlingResult
     public Transaction createTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
@@ -43,6 +51,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Retryable(backoff = @Backoff(delay = 1, maxDelay = 100, random = true))
     @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Track
+    @HandlingResult
     public Transaction updateTransaction(Long id, Transaction updatedTransaction) {
         return transactionRepository.findById(id).filter(transaction ->
                 !transaction.getIsDeleted()).map(transaction -> {
@@ -54,6 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
+    @Track
     public void deleteTransaction(Long id) {
         transactionRepository.markAsDeleted(id);
     }

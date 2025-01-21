@@ -10,27 +10,15 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 @Async
 @Slf4j
 @Aspect
 @Component
 public class TrackingAspect {
 
-    private static final AtomicLong START_TIME = new AtomicLong();
-
     @Before("@annotation(ru.t1.java.demo.aop.Track)")
     public void logExecTime(JoinPoint joinPoint) throws Throwable {
         log.info("Старт метода: {}", joinPoint.getSignature().toShortString());
-        START_TIME.addAndGet(System.currentTimeMillis());
-    }
-
-    @After("@annotation(ru.t1.java.demo.aop.Track)")
-    public void calculateTime(JoinPoint joinPoint) {
-        long afterTime = System.currentTimeMillis();
-        log.info("Время исполнения: {} ms", (afterTime - START_TIME.get()));
-        START_TIME.set(0L);
     }
 
     @Around("@annotation(ru.t1.java.demo.aop.Track)")
@@ -47,5 +35,4 @@ public class TrackingAspect {
         log.info("Время исполнения: {} ms", (afterTime - beforeTime));
         return result;
     }
-
 }

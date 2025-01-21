@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogExecution;
-import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.exception.ClientException;
 import ru.t1.java.demo.model.Client;
@@ -49,8 +48,6 @@ public class ClientController {
     @GetMapping
     @LogException
     @LogExecution
-    @Track
-    @HandlingResult
     public List<Client> getAllClients() {
         return clientService.getAllClients();
     }
@@ -58,8 +55,6 @@ public class ClientController {
     @GetMapping("/{id}")
     @LogException
     @LogExecution
-    @Track
-    @HandlingResult
     public Optional<Client> getClientById(@PathVariable Long id) {
         return clientService.getClientById(id);
     }
@@ -67,8 +62,6 @@ public class ClientController {
     @PostMapping
     @LogException
     @LogExecution
-    @Track
-    @HandlingResult
     public Client createClient(@RequestBody Client client) {
         return clientService.saveClient(client);
     }
@@ -76,8 +69,6 @@ public class ClientController {
     @PutMapping("/{id}")
     @LogException
     @LogExecution
-    @Track
-    @HandlingResult
     public Client updateClient(@PathVariable Long id, @RequestBody Client updatedClient) {
         return clientService.updateClient(id, updatedClient);
     }
@@ -85,7 +76,6 @@ public class ClientController {
     @DeleteMapping("/{id}")
     @LogException
     @LogExecution
-    @Track
     public void deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
     }
