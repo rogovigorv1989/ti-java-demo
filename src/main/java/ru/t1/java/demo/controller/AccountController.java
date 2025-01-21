@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.t1.java.demo.aop.LogDataSourceError;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.aop.LogExecution;
 import ru.t1.java.demo.model.Account;
@@ -30,7 +31,7 @@ public class AccountController {
     private ClientService clientService;
 
     @GetMapping
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public List<Account> getAllAccounts() {
         return accountService.getAllAccounts();
@@ -44,7 +45,7 @@ public class AccountController {
     }
 
     @PostMapping
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         Client client = clientService.findById(account.getClient().getId());
@@ -57,14 +58,14 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public Account updateAccount(@PathVariable Long id, @RequestBody Account updatedAccount) {
         return accountService.updateAccount(id, updatedAccount);
     }
 
     @DeleteMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     public void deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
     }

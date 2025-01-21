@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.t1.java.demo.aop.LogDataSourceError;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.aop.LogExecution;
 import ru.t1.java.demo.model.Transaction;
@@ -21,21 +22,21 @@ class TransactionController {
     private final TransactionService transactionService;
 
     @GetMapping
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public List<Transaction> getAllTransactions() {
         return transactionService.getAllTransactions();
     }
 
     @GetMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public Optional<Transaction> getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id);
     }
 
     @PostMapping
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
         Transaction savedTransaction = transactionService.createTransaction(transaction);
@@ -43,14 +44,14 @@ class TransactionController {
     }
 
     @PutMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     @LogExecution
     public Transaction updateTransaction(@PathVariable Long id, @RequestBody Transaction updatedTransaction) {
         return transactionService.updateTransaction(id, updatedTransaction);
     }
 
     @DeleteMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     public void deleteTransaction(@PathVariable Long id) {
         transactionService.deleteTransaction(id);
     }
