@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogException;
+import ru.t1.java.demo.aop.LogExecution;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.service.TransactionService;
 
@@ -20,6 +22,8 @@ class TransactionController {
     private final TransactionService transactionService;
 
     @GetMapping
+    @LogExecution
+    @HandlingResult
     public List<Transaction> getAllTransactions() {
         return transactionService.getAllTransactions();
     }

@@ -6,16 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RestController;
-import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.DataSourceErrorLog;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.repository.DataSourceErrorLogRepository;
 
 import java.util.List;
-import java.util.stream.Stream;
-
-import static java.util.Objects.isNull;
 
 @Slf4j
 @Aspect
@@ -36,10 +31,10 @@ public class LogAspect {
         log.info("ASPECT BEFORE ANNOTATION: Call method: {}", joinPoint.getSignature().getName());
     }
 
-//    @Before("execution(public * ru.t1.java.demo.service.ClientService.*(..))")
-//    public void logBefore(JoinPoint joinPoint) {
-//        log.error("ASPECT BEFORE: Call method: {}", joinPoint.getSignature().getName());
-//    }
+    @Before("execution(public * ru.t1.java.demo.service.TransactionService.*(..))")
+    public void logBefore(JoinPoint joinPoint) {
+        log.error("ASPECT BEFORE: Call method: {}", joinPoint.getSignature().getName());
+    }
 
     @AfterThrowing(pointcut = "@annotation(LogException)", throwing = "ex")
     @Order(0)
@@ -75,13 +70,9 @@ public class LogAspect {
     @AfterReturning(
             pointcut = "@annotation(HandlingResult)",
             returning = "result")
-    public void handleResult(JoinPoint joinPoint, List<Client> result) {
+    public void handleResult(JoinPoint joinPoint, List<Transaction> result) {
         log.info("В результате выполнения метода {}", joinPoint.getSignature().toShortString());
-//        log.info("получен результат: {} ", result);
-        log.info("Подробности: \n");
-
-        result = isNull(result) ? List.of() : result;
-
+        log.info("получен результат: {} ", result);
     }
 
     private String getStackTraceAsString(Exception ex) {
