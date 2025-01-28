@@ -5,11 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.t1.java.demo.aop.LogDataSourceError;
-import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.aop.LogExecution;
+import ru.t1.java.demo.aop.Metric;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.service.AccountService;
@@ -33,13 +40,15 @@ public class AccountController {
     @GetMapping
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 10)
     public List<Account> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
     @GetMapping("/{id}")
-    @LogException
+    @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 10)
     public Optional<Account> getAccountById(@PathVariable Long id) {
         return accountService.getAccountById(id);
     }
@@ -47,6 +56,7 @@ public class AccountController {
     @PostMapping
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 10)
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         Client client = clientService.findById(account.getClient().getId());
         if (client == null) {
@@ -60,12 +70,14 @@ public class AccountController {
     @PutMapping("/{id}")
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 10)
     public Account updateAccount(@PathVariable Long id, @RequestBody Account updatedAccount) {
         return accountService.updateAccount(id, updatedAccount);
     }
 
     @DeleteMapping("/{id}")
     @LogDataSourceError
+    @Metric(threshold = 10)
     public void deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
     }

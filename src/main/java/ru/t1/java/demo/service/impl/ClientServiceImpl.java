@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.Track;
-import ru.t1.java.demo.dto.ClientDto;
 import ru.t1.java.demo.model.Client;
+import ru.t1.java.demo.model.dto.ClientDTO;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.service.ClientService;
 import ru.t1.java.demo.util.ClientMapper;
@@ -23,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -50,7 +49,7 @@ public class ClientServiceImpl implements ClientService {
     public List<Client> parseJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
-        ClientDto[] clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDto[].class);
+        ClientDTO[] clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDTO[].class);
 
         return Arrays.stream(clients)
                 .map(ClientMapper::toEntity)

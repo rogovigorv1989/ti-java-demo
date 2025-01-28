@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "data_source_error_log")
-public class DataSourceErrorLog {
+public class DataSourceErrorLog  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,4 +32,5 @@ public class DataSourceErrorLog {
 
     @Column(name = "method_signature", length = 16384)
     private String methodSignature;
+
 }
