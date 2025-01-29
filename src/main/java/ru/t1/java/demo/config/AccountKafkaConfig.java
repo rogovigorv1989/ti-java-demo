@@ -9,14 +9,14 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import ru.t1.java.demo.kafka.KafkaAccountProducer;
+import ru.t1.java.demo.kafka.AccountProducer;
 import ru.t1.java.demo.model.dto.AccountDTO;
 
 @Slf4j
 @Configuration
 public class AccountKafkaConfig extends AbstractKafkaConfig<AccountDTO> {
 
-    @Value("${t1.kafka.topic.account_registered}")
+    @Value("${t1.kafka.topic.t1_demo_accounts}")
     private String topic;
 
     @Bean
@@ -38,9 +38,9 @@ public class AccountKafkaConfig extends AbstractKafkaConfig<AccountDTO> {
 
     @Bean("producerAccount")
     @ConditionalOnProperty(value = "t1.kafka.producer.enable", havingValue = "true", matchIfMissing = true)
-    public KafkaAccountProducer producerAccount(KafkaTemplate<String, AccountDTO> template) {
+    public AccountProducer producerAccount(KafkaTemplate<String, AccountDTO> template) {
         template.setDefaultTopic(topic);
-        return new KafkaAccountProducer(template);
+        return new AccountProducer(template);
     }
 
     @Bean("producerAccountFactory")

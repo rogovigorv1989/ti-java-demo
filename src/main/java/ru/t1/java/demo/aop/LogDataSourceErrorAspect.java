@@ -9,9 +9,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import ru.t1.java.demo.model.DataSourceErrorLog;
-import ru.t1.java.demo.model.dto.DataSourceErrorLogDTO;
 import ru.t1.java.demo.repository.DataSourceErrorLogRepository;
 
 @Slf4j
@@ -22,7 +23,7 @@ public class LogDataSourceErrorAspect {
 
     @Autowired
     @Qualifier("metricsKafkaTemplate")
-    private KafkaTemplate<String, DataSourceErrorLogDTO> template;
+    private KafkaTemplate<String, Message> template;
 
     @Autowired
     private DataSourceErrorLogRepository errorLogRepository;
@@ -37,13 +38,19 @@ public class LogDataSourceErrorAspect {
         } catch (Exception ex) {
             String errorMessage = ex.getMessage();
             try {
-                DataSourceErrorLogDTO errorLog = DataSourceErrorLogDTO.builder()
-                        .message(ex.getMessage())
-                        .exceptionStackTrace(getStackTraceAsString(ex))
-                        .methodSignature(joinPoint.getSignature().toShortString())
+                Message<String> message = MessageBuilder
+                        .withPayload(errorMessage)
+                        .setHeader("error_type", "DATA_SOURCE")
                         .build();
 
-                template.send("t1_demo_metrics", "DATA_SOURCE", errorLog);
+//            try {
+//                DataSourceErrorLogDTO errorLog = DataSourceErrorLogDTO.builder()
+//                        .message(ex.getMessage())
+//                        .exceptionStackTrace(getStackTraceAsString(ex))
+//                        .methodSignature(joinPoint.getSignature().toShortString())
+//                        .build();
+
+                template.send(message);
             } catch (Exception kafkaEx) {
                 DataSourceErrorLog errorLog = new DataSourceErrorLog();
                 errorLog.setMessage(ex.getMessage());

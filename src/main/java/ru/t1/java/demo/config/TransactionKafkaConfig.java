@@ -9,14 +9,14 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import ru.t1.java.demo.kafka.KafkaTransactionProducer;
+import ru.t1.java.demo.kafka.TransactionProducer;
 import ru.t1.java.demo.model.dto.TransactionDTO;
 
 @Slf4j
 @Configuration
 public class TransactionKafkaConfig extends AbstractKafkaConfig<TransactionDTO> {
 
-    @Value("${t1.kafka.topic.transaction_registered}")
+    @Value("${t1.kafka.topic.t1_demo_transactions}")
     private String topic;
 
     @Bean
@@ -38,9 +38,9 @@ public class TransactionKafkaConfig extends AbstractKafkaConfig<TransactionDTO> 
 
     @Bean("producerTransaction")
     @ConditionalOnProperty(value = "t1.kafka.producer.enable", havingValue = "true", matchIfMissing = true)
-    public KafkaTransactionProducer producerTransaction(KafkaTemplate<String, TransactionDTO> template) {
+    public TransactionProducer producerTransaction(KafkaTemplate<String, TransactionDTO> template) {
         template.setDefaultTopic(topic);
-        return new KafkaTransactionProducer(template);
+        return new TransactionProducer(template);
     }
 
     @Bean("producerTransactionFactory")

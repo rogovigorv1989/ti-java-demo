@@ -53,12 +53,18 @@ t1:
       server: ${KAFKA_SERVER:localhost:9092}
     consumer:
       group-id: t1-demo
+      auto-offset-reset: earliest
       max.poll.records: 10
       session-timeout: 10000
       heartbeat.interval: 3000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
+      acks: all
+      retries: 3
+      linger.ms: 1
+      request.timeout.ms: 5000
+      delivery.timeout.ms: 60000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       enable: true
@@ -66,8 +72,8 @@ t1:
       client_registration: t1_demo_client_registration
       client_id_registered: t1_demo_client_registered
       client_transactions: t1_demo_client_transactions
-      account_registered: t1_demo_accounts
-      transaction_registered: t1_demo_transactions
+      t1_demo_accounts: _t1_demo_accounts
+      t1_demo_transactions: _t1_demo_transactions
       metrics: t1_demo_metrics
     listener:
       poll-timeout: 1000

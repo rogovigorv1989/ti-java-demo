@@ -4,17 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import ru.t1.java.demo.model.dto.AccountDTO;
 
 @Slf4j
 @Component
-public class KafkaAccountProducer<T extends AccountDTO> {
+public class MetricsProducer<T extends Message> {
 
     @Autowired
-    private KafkaTemplate<String, AccountDTO> kafkaTemplate;
+    private KafkaTemplate<String, Message> template;
 
-    public KafkaAccountProducer(@Qualifier("accountKafkaTemplate") KafkaTemplate<String, AccountDTO> template) {
-        this.kafkaTemplate = template;
+    public MetricsProducer(@Qualifier("metricsKafkaTemplate") KafkaTemplate<String, Message> template) {
+        this.template = template;
     }
 }

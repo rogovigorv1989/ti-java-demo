@@ -9,42 +9,42 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import ru.t1.java.demo.kafka.KafkaMetricsProducer;
-import ru.t1.java.demo.model.dto.DataSourceErrorLogDTO;
+import org.springframework.messaging.Message;
+import ru.t1.java.demo.kafka.MetricsProducer;
 
 @Slf4j
 @Configuration
-public class MetricsKafkaConfig extends AbstractKafkaConfig<DataSourceErrorLogDTO> {
+public class MetricsKafkaConfig extends AbstractKafkaConfig<Message> {
 
     @Value("${t1.kafka.topic.metrics}")
     private String topic;
 
     @Bean
-    public ConsumerFactory<String, DataSourceErrorLogDTO> consumerMetricsListenerFactory() {
-        return createConsumerFactory(DataSourceErrorLogDTO.class);
+    public ConsumerFactory<String, Message> consumerMetricsListenerFactory() {
+        return createConsumerFactory(Message.class);
     }
 
-    @Bean("kafkaMetricsListenerContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<String, DataSourceErrorLogDTO>
-    kafkaMetricsListenerContainerFactory(ConsumerFactory<String, DataSourceErrorLogDTO> consumerFactory) {
+    @Bean("kafkmetricsListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, Message>
+    kafkaMetricsListenerContainerFactory(ConsumerFactory<String, Message> consumerFactory) {
         return createListenerContainerFactory(consumerFactory);
     }
 
     @Bean("metricsKafkaTemplate")
-    public KafkaTemplate<String, DataSourceErrorLogDTO> kafkaMetricsTemplate(
-            ProducerFactory<String, DataSourceErrorLogDTO> producerFactory) {
+    public KafkaTemplate<String, Message> kafkaMetricsTemplate(
+            ProducerFactory<String, Message> producerFactory) {
         return createKafkaTemplate(producerFactory);
     }
 
     @Bean("producerMetrics")
     @ConditionalOnProperty(value = "t1.kafka.producer.enable", havingValue = "true", matchIfMissing = true)
-    public KafkaMetricsProducer producerMetrics(KafkaTemplate<String, DataSourceErrorLogDTO> template) {
+    public MetricsProducer producerMetrics(KafkaTemplate<String, Message> template) {
         template.setDefaultTopic(topic);
-        return new KafkaMetricsProducer(template);
+        return new MetricsProducer(template);
     }
 
     @Bean("producerMetricsFactory")
-    public ProducerFactory<String, DataSourceErrorLogDTO> producerMetricsFactory() {
+    public ProducerFactory<String, Message> producerMetricsFactory() {
         return createProducerFactory();
     }
 }

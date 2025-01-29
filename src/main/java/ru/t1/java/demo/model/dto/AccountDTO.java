@@ -14,8 +14,7 @@ import ru.t1.java.demo.model.Account;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public class AccountDTO {
-    @JsonProperty("id")
-    private Long id;
+
 
     @JsonProperty("client_id")
     private Long client;

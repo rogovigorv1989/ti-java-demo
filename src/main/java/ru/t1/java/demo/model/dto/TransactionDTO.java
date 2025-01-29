@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public class TransactionDTO {
-    @JsonProperty("id")
-    private Long id;
 
     @JsonProperty("account_id")
     private Long accountId;

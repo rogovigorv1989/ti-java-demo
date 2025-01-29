@@ -11,7 +11,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import ru.t1.java.demo.model.dto.DataSourceErrorLogDTO;
 
 import java.util.Arrays;
 
@@ -21,7 +20,7 @@ import java.util.Arrays;
 public class MetricAspect {
     @Autowired
     @Qualifier("metricsKafkaTemplate")
-    private KafkaTemplate<String, DataSourceErrorLogDTO> kafkaTemplate;
+    private KafkaTemplate<String, Message> kafkaTemplate;
 
     @Pointcut("@annotation(ru.t1.java.demo.aop.Metric) && @annotation(metricAnnotation)")
     public void metricPointcut(Metric metricAnnotation) {}
@@ -29,7 +28,13 @@ public class MetricAspect {
     @Around(value = "metricPointcut(metricAnnotation)", argNames = "joinPoint,metricAnnotation")
     public Object measureExecutionTime(ProceedingJoinPoint joinPoint, Metric metricAnnotation) throws Throwable {
         long startTime = System.currentTimeMillis();
-        Object result = joinPoint.proceed();
+        Object result = null;
+        try {
+            result = joinPoint.proceed();
+        } catch (Throwable ex) {
+            log.error("Error during method execution: {}", ex.getMessage(), ex);
+            throw ex;
+        }
         long executionTime = System.currentTimeMillis() - startTime;
 
         if (executionTime > metricAnnotation.threshold()) {
@@ -43,7 +48,7 @@ public class MetricAspect {
                     .setHeader("error_type", "METRICS")
                     .build();
 //
-//            kafkaTemplate.send("t1_demo_metrics", message);
+            kafkaTemplate.send(message);
         }
 
         return result;

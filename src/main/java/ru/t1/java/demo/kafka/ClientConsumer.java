@@ -16,12 +16,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class KafkaClientConsumer {
+public class ClientConsumer {
 
     private final ClientService clientService;
 
-    @KafkaListener(id = "${t1.kafka.consumer.group-id}",
-            topics = {"t1_demo_client_registration", "client_topic"},
+    @KafkaListener(groupId = "${t1.kafka.consumer.group-id}",
+            topics = {"t1_demo_client_registration"},
             containerFactory = "kafkaListenerContainerFactory")
     public void listener(@Payload List<ClientDTO> messageList,
                          Acknowledgment ack,

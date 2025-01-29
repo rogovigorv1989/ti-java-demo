@@ -11,9 +11,12 @@ public interface TransactionService {
 
     Optional<Transaction> getTransactionById(Long id);
 
-    Transaction createTransaction(Transaction transaction);
+    Transaction save(Transaction transaction);
+
+    void sendToSave(Transaction transaction);
 
     Transaction updateTransaction(Long id, Transaction updatedTransaction);
 
     void deleteTransaction(Long id);
+
 }

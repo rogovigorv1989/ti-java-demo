@@ -117,6 +117,11 @@
             <artifactId>hibernate-core</artifactId>
             <version>6.6.4.Final</version>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
     </dependencies>
 
     <build>

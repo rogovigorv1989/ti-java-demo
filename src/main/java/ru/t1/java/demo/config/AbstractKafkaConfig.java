@@ -77,7 +77,7 @@ public abstract class AbstractKafkaConfig<T> {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
-        props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 1000);
+        props.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 10000);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
         return props;
     }
@@ -111,7 +111,7 @@ public abstract class AbstractKafkaConfig<T> {
     }
 
     protected CommonErrorHandler errorHandler() {
-        DefaultErrorHandler handler = new DefaultErrorHandler(new FixedBackOff(1000, 3));
+        DefaultErrorHandler handler = new DefaultErrorHandler(new FixedBackOff(10000, 3));
         handler.addNotRetryableExceptions(IllegalStateException.class);
         handler.setRetryListeners((record, ex, deliveryAttempt) -> {
             log.error("RetryListeners message = {}, offset = {}, deliveryAttempt = {}",

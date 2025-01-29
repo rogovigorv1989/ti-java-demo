@@ -9,7 +9,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import ru.t1.java.demo.kafka.KafkaClientProducer;
+import ru.t1.java.demo.kafka.ClientProducer;
 import ru.t1.java.demo.model.dto.ClientDTO;
 
 @Slf4j
@@ -38,9 +38,9 @@ public class ClientKafkaConfig extends AbstractKafkaConfig<ClientDTO> {
 
     @Bean("producerClient")
     @ConditionalOnProperty(value = "t1.kafka.producer.enable", havingValue = "true", matchIfMissing = true)
-    public KafkaClientProducer producerClient(KafkaTemplate<String, ClientDTO> template) {
+    public ClientProducer producerClient(KafkaTemplate<String, ClientDTO> template) {
         template.setDefaultTopic(topic);
-        return new KafkaClientProducer(template);
+        return new ClientProducer(template);
     }
 
     @Bean("producerClientFactory")

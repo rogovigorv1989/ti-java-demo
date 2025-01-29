@@ -13,12 +13,12 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class KafkaClientProducer<T extends ClientDTO> {
+public class ClientProducer<T extends ClientDTO> {
 
     @Autowired
     private final KafkaTemplate<String, ClientDTO> template;
 
-    public KafkaClientProducer(@Qualifier("clientKafkaTemplate") KafkaTemplate<String, ClientDTO> template) {
+    public ClientProducer(@Qualifier("clientKafkaTemplate") KafkaTemplate<String, ClientDTO> template) {
         this.template = template;
     }
 
