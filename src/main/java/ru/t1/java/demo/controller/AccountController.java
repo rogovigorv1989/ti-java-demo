@@ -53,9 +53,9 @@ public class AccountController {
     }
 
     @PostMapping("/{clientId}")
-//    @LogDataSourceError
-//    @LogExecution
-//    @Metric(threshold = 1L)
+    @LogDataSourceError
+    @LogExecution
+    @Metric(threshold = 1L)
     public void createAccount(@PathVariable Long clientId, @RequestBody Account account) {
         Client client = clientService.findById(clientId);
         if (client == null) {

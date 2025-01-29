@@ -30,7 +30,7 @@ public class TransactionConsumer implements TransactionMapper {
 
     @KafkaListener(groupId = "${t1.kafka.consumer.group-id}",
             topics = {"${t1.kafka.topic.t1_demo_transactions}"},
-            containerFactory = "kafkaAccountListenerContainerFactory")
+            containerFactory = "kafkaTransactionListenerContainerFactory")
     public void listener(@Payload List<TransactionDTO> messageList,
                          Acknowledgment ack,
                          @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,

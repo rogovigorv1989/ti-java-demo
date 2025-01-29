@@ -52,9 +52,9 @@ class TransactionController {
     }
 
     @PostMapping("/{accountId}")
-//    @LogDataSourceError
-//    @LogExecution
-//    @Metric(threshold = 1L)
+    @LogDataSourceError
+    @LogExecution
+    @Metric(threshold = 1L)
     public void createTransaction(@PathVariable Long accountId, @RequestBody Transaction transaction) {
         Account account = accountService.findById(accountId);
         if (account == null) {
