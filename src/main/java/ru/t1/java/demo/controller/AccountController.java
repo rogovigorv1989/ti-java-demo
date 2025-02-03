@@ -56,7 +56,7 @@ public class AccountController {
     @LogDataSourceError
     @LogExecution
     @Metric(threshold = 1L)
-    public void createAccount(@PathVariable Long clientId, @RequestBody Account account) {
+    public void createAccount(@PathVariable String clientId, @RequestBody Account account) {
         Client client = clientService.findById(clientId);
         if (client == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client not found");
@@ -69,7 +69,7 @@ public class AccountController {
     @LogDataSourceError
     @LogExecution
     @Metric(threshold = 1L)
-    public Account updateAccount(@PathVariable Long id, @RequestBody Account updatedAccount) {
+    public Account updateAccount(@PathVariable String id, @RequestBody Account updatedAccount) {
         return accountService.updateAccount(id, updatedAccount);
     }
 

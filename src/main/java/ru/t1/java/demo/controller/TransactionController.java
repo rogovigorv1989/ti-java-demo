@@ -55,13 +55,13 @@ class TransactionController {
     @LogDataSourceError
     @LogExecution
     @Metric(threshold = 1L)
-    public void createTransaction(@PathVariable Long accountId, @RequestBody Transaction transaction) {
+    public void createTransaction(@PathVariable String accountId, @RequestBody Transaction transaction) {
         Account account = accountService.findById(accountId);
         if (account == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client not found");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account not found");
         }
         transaction.setAccount(account);
-        transactionService.sendToSave(transaction);
+        transactionService.sendAndSave(transaction);
     }
 
     @PutMapping("/{id}")

@@ -14,7 +14,7 @@ import ru.t1.java.demo.model.dto.TransactionDTO;
 public interface TransactionMapper {
     Transaction toEntity(TransactionDTO transactionDTO);
 
-    TransactionDTO toDto(Transaction client);
+    TransactionDTO toDto(Transaction transaction);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Transaction partialUpdate(TransactionDTO transactionDTO, @MappingTarget Transaction transaction);

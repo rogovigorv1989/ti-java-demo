@@ -105,7 +105,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     @Transactional
     @Track
-    public Client findById(Long id) {
-        return clientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Client not found"));
+    public Client findById(String id) {
+        return clientRepository.findByClientId(id).orElseThrow(() -> new IllegalArgumentException("Client not found"));
     }
 }

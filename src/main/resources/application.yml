@@ -55,7 +55,7 @@ t1:
       group-id: t1-demo
       auto-offset-reset: earliest
       max.poll.records: 10
-      session-timeout: 10000
+      session-timeout: 1000
       heartbeat.interval: 3000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -74,6 +74,7 @@ t1:
       client_transactions: t1_demo_client_transactions
       t1_demo_accounts: _t1_demo_accounts
       t1_demo_transactions: _t1_demo_transactions
+      t1_demo_transaction_accept: _t1_demo_transaction_accept
       metrics: t1_demo_metrics
     listener:
       poll-timeout: 1000

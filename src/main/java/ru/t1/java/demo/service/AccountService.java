@@ -13,12 +13,13 @@ public interface AccountService {
 
     void sendTosave(Account account);
 
-    Account updateAccount(Long id, Account updatedAccount);
+    Account updateAccount(String id, Account updatedAccount) throws IllegalArgumentException;
 
     void deleteAccount(Long id);
 
     Account save(Account account);
 
-     Account findById(Long id);
+    Account findById(String id);
 
+    Optional<Account> findByAccountId(String id);
 }

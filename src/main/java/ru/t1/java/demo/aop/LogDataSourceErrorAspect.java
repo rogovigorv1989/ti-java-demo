@@ -43,13 +43,6 @@ public class LogDataSourceErrorAspect {
                         .setHeader("error_type", "DATA_SOURCE")
                         .build();
 
-//            try {
-//                DataSourceErrorLogDTO errorLog = DataSourceErrorLogDTO.builder()
-//                        .message(ex.getMessage())
-//                        .exceptionStackTrace(getStackTraceAsString(ex))
-//                        .methodSignature(joinPoint.getSignature().toShortString())
-//                        .build();
-
                 template.send(message);
             } catch (Exception kafkaEx) {
                 DataSourceErrorLog errorLog = new DataSourceErrorLog();
@@ -63,26 +56,6 @@ public class LogDataSourceErrorAspect {
         }
     }
 
-//    @Pointcut("within(ru.t1.java.demo.*)")
-//    public void loggingMethods() {
-//
-//    }
-
-//    @AfterThrowing(pointcut = "@annotation(LogDataSourceError)", throwing = "ex")
-//    @Order(0)
-//    public void logExceptionAnnotation(JoinPoint joinPoint, Exception ex) {
-//        DataSourceErrorLog errorLog = new DataSourceErrorLog();
-//        errorLog.setMessage(ex.getMessage());
-//        errorLog.setExceptionStackTrace(getStackTraceAsString(ex));
-//        errorLog.setMethodSignature(joinPoint.getSignature().toShortString());
-//
-//        try {
-//            errorLogRepository.save(errorLog);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
     private String getStackTraceAsString(Exception ex) {
         StringBuilder sb = new StringBuilder();
         for (StackTraceElement element : ex.getStackTrace()) {

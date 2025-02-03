@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    @Override
-    Optional<Client> findById(Long aLong);
+    @Modifying
+    @Query("SELECT c FROM Client c WHERE c.clientId = :clientId")
+    Optional<Client> findByClientId(String clientId);
 
     @Query("SELECT c FROM Client c WHERE c.isDeleted = false")
     List<Client> findAllActive();

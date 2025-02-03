@@ -55,15 +55,21 @@ class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @Track
-    public Account findById(Long id) {
-        return accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+    public Account findById(String id) {
+        return accountRepository.findByAccountId(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+    }
+
+    @Override
+    @Transactional
+    public Optional<Account> findByAccountId(String id) {
+        return accountRepository.findByAccountId(id);
     }
 
     @Override
     @Track
     public void sendTosave(Account account) {
         AccountDTO dto = new AccountDTO(
-                account.getClient().getId(),
+                account.getClient().getClientId(),
                 account.getAccountType(),
                 account.getBalance(),
                 account.getIsDeleted()
@@ -76,8 +82,8 @@ class AccountServiceImpl implements AccountService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     @Track
     @HandlingResult
-    public Account updateAccount(Long id, Account updatedAccount) {
-        return accountRepository.findById(id).filter(account -> !account.getIsDeleted()).map(account -> {
+    public Account updateAccount(String id, Account updatedAccount) {
+        return accountRepository.findByAccountId(id).filter(account -> !account.getIsDeleted()).map(account -> {
             account.setAccountType(updatedAccount.getAccountType());
             account.setBalance(updatedAccount.getBalance());
             return accountRepository.save(account);

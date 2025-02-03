@@ -51,7 +51,7 @@ public class TransactionConsumer implements TransactionMapper {
                         return toEntity(dto);
                     })
                     .toList();
-            transactions.forEach(transactionService::save);
+            transactionService.saveAll(transactions);
         } finally {
             ack.acknowledge();
         }
@@ -72,7 +72,7 @@ public class TransactionConsumer implements TransactionMapper {
     }
 
     @Override
-    public TransactionDTO toDto(Transaction client) {
+    public TransactionDTO toDto(Transaction transaction) {
         return null;
     }
 

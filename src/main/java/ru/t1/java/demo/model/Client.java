@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,9 +23,9 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "client")
 public class Client extends AbstractPersistable<Long> {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+
+    @Column(name = "client_id", nullable = false, unique = true)
+    private String clientId = UUID.randomUUID().toString();
 
     @Column(name = "first_name")
     private String firstName;

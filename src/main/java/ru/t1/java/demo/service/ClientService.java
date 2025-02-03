@@ -19,5 +19,5 @@ public interface ClientService {
 
     void deleteClient(Long id);
 
-    Client findById(Long id);
+    Client findById(String id);
 }
