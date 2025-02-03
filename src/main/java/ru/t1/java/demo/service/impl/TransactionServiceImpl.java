@@ -3,6 +3,7 @@ package ru.t1.java.demo.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -17,17 +18,21 @@ import ru.t1.java.demo.mapper.TransactionMapper;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.model.dto.TransactionDTO;
+import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
 import ru.t1.java.demo.service.TransactionService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.t1.java.demo.config.Сonstants.T;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TransactionServiceImpl implements TransactionService, TransactionMapper {
+public class TransactionServiceImpl implements TransactionService {
     @Value("${t1.kafka.topic.t1_demo_transaction_accept}")
     private String acceptTransactionTopic;
 
@@ -36,6 +41,13 @@ public class TransactionServiceImpl implements TransactionService, TransactionMa
 
     @Autowired
     private final TransactionProducer<TransactionDTO> transactionProducer;
+
+    @Autowired
+    private final AccountRepository accountRepository;
+
+    @Qualifier("transactionMapperImpl")
+    @Autowired
+    private final TransactionMapper transactionMapper;
 
     @Override
     @Transactional
@@ -54,16 +66,15 @@ public class TransactionServiceImpl implements TransactionService, TransactionMa
     }
 
     @Override
-    @Transactional
     @Track
     @HandlingResult
-    public List<Transaction> saveAll(List<Transaction> transactions)  {
-        List<Transaction> acceptedTransactions = new ArrayList<>();
+    public List<Transaction> requestAndSave(List<Transaction> transactions)  {
+        List<Transaction> requestedTransactions = new ArrayList<>();
 
         transactions.forEach(transaction -> {
             if (transaction.getAccount().getStatus().equals(Account.Status.OPEN)) {
                 transaction.setStatus(Transaction.Status.REQUESTED);
-                acceptedTransactions.add(transaction);
+                requestedTransactions.add(transaction);
             } else {
                 log.info("Transaction with id:{} rejected", transaction.getTransactionId());
                 throw new TransactionException("Transaction cannot be accepted because account status is 'CLOSED'");
@@ -71,7 +82,7 @@ public class TransactionServiceImpl implements TransactionService, TransactionMa
         });
 
         try {
-            List<Transaction> savedTransactions = transactionRepository.saveAll(acceptedTransactions);
+            List<Transaction> savedTransactions = transactionRepository.saveAll(requestedTransactions);
             savedTransactions.forEach(this::sendToAndSave);
             return savedTransactions;
         } catch (Exception e) {
@@ -81,14 +92,48 @@ public class TransactionServiceImpl implements TransactionService, TransactionMa
     }
 
     @Override
+    public void processTransactionResult(List<Transaction> transactions) {
+        transactions.forEach(transaction -> {
+            Optional<Transaction> existingTransaction =
+                    transactionRepository.findByTransactionId(transaction.getTransactionId());
+
+            existingTransaction.ifPresent(t -> {
+                Account account = t.getAccount();
+                switch (transaction.getStatus()) {
+                    case ACCEPTED:
+                        t.setStatus(Transaction.Status.ACCEPTED);
+                        break;
+                    case BLOCKED:
+                        List<Transaction> blockedTransactions = transactionRepository.findRecentTransactions(
+                                account.getAccountId(), LocalDateTime.now().minusSeconds(T)
+                        );
+                        blockedTransactions.forEach(bt -> bt.setStatus(Transaction.Status.BLOCKED));
+                        transactionRepository.saveAll(blockedTransactions);
+                        account.setStatus(Account.Status.BLOCKED);
+                        double blockedAmount = blockedTransactions.stream().mapToDouble(Transaction::getTransactionAmount).sum();
+                        account.setFrozenAmount(account.getFrozenAmount() + blockedAmount);
+                        accountRepository.save(account);
+                        break;
+                    case REJECTED:
+                        t.setStatus(Transaction.Status.REJECTED);
+                        account.setBalance(account.getBalance() + t.getTransactionAmount());
+                        accountRepository.save(account);
+                        break;
+                }
+                transactionRepository.save(t);
+            });
+        });
+    }
+
+    @Override
     @Track
     public void sendAndSave(Transaction transaction) {
-        TransactionDTO dto = toDto(transaction);
+        TransactionDTO dto = transactionMapper.toDto(transaction);
         transactionProducer.send(dto);
     }
 
     public void sendToAndSave(Transaction transaction) {
-        TransactionDTO dto =toDto(transaction);
+        TransactionDTO dto = transactionMapper.toDto(transaction);
         transactionProducer.sendTo(acceptTransactionTopic, dto);
     }
 
@@ -111,29 +156,5 @@ public class TransactionServiceImpl implements TransactionService, TransactionMa
     @Track
     public void deleteTransaction(Long id) {
         transactionRepository.markAsDeleted(id);
-    }
-
-    @Override
-    public Transaction toEntity(TransactionDTO transactionDTO) {
-        return null;
-    }
-
-    @Override
-    public TransactionDTO toDto(Transaction transaction) {
-        TransactionDTO dto = new TransactionDTO();
-        dto.setAccountId(transaction.getAccount().getAccountId());
-        dto.setTransactionAmount(transaction.getTransactionAmount());
-        dto.setTransactionTime(transaction.getTransactionTime());
-        dto.setIsDeleted(transaction.getIsDeleted());
-        dto.setClientId(transaction.getAccount().getClient().getClientId());
-        dto.setTransactionId(transaction.getTransactionId());
-        dto.setCreatedAt(transaction.getCreatedAt());
-        dto.setAccountBalance(transaction.getAccount().getBalance());
-        return dto;
-    }
-
-    @Override
-    public Transaction partialUpdate(TransactionDTO transactionDTO, Transaction transaction) {
-        return null;
     }
 }

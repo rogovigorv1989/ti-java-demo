@@ -11,7 +11,7 @@ public interface TransactionService {
 
     Optional<Transaction> getTransactionById(Long id);
 
-    List<Transaction> saveAll(List<Transaction> transactions);
+    List<Transaction> requestAndSave(List<Transaction> transactions);
 
     void sendAndSave(Transaction transaction);
 
@@ -19,4 +19,5 @@ public interface TransactionService {
 
     void deleteTransaction(Long id);
 
+    void processTransactionResult(List<Transaction> transactions);
 }

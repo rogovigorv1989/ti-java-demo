@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.t1.java.demo.model.Transaction;
 
 import java.time.LocalDateTime;
 
@@ -39,4 +40,7 @@ public class TransactionDTO {
 
     @JsonProperty("account_balance")
     private Double accountBalance;
+
+    @JsonProperty("status")
+    private Transaction.Status status;
 }
