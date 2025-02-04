@@ -102,6 +102,8 @@ public class TransactionServiceImpl implements TransactionService {
                 switch (transaction.getStatus()) {
                     case ACCEPTED:
                         t.setStatus(Transaction.Status.ACCEPTED);
+                        account.setBalance(account.getBalance() + t.getTransactionAmount());
+                        accountRepository.save(account);
                         break;
                     case BLOCKED:
                         List<Transaction> blockedTransactions = transactionRepository.findRecentTransactions(
@@ -116,8 +118,6 @@ public class TransactionServiceImpl implements TransactionService {
                         break;
                     case REJECTED:
                         t.setStatus(Transaction.Status.REJECTED);
-                        account.setBalance(account.getBalance() + t.getTransactionAmount());
-                        accountRepository.save(account);
                         break;
                 }
                 transactionRepository.save(t);

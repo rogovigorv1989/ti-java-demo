@@ -59,10 +59,12 @@ t1:
       heartbeat.interval: 3000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      max.poll.interval.ms: 300000
     producer:
       acks: all
       retries: 3
       linger.ms: 1
+      transaction-id-prefix: tx-
 #      request.timeout.ms: 5000
 #      delivery.timeout.ms: 60000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

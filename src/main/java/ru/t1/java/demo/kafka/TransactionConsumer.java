@@ -58,6 +58,8 @@ public class TransactionConsumer {
                     }).toList();
             transactionService.requestAndSave(transactions);
             log.debug("Transaction consumer: записи обработаны");
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
             ack.acknowledge();
         }
@@ -91,6 +93,8 @@ public class TransactionConsumer {
                     }).toList();
             transactionService.processTransactionResult(transactions);
             log.debug("Transaction consumer: записи обработаны");
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
         } finally {
             ack.acknowledge();
         }
