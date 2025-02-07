@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.Track;
+import ru.t1.java.demo.kafka.AccountProducer;
 import ru.t1.java.demo.model.Account;
+import ru.t1.java.demo.model.dto.AccountDTO;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.service.AccountService;
 
@@ -24,6 +26,9 @@ import java.util.Optional;
 class AccountServiceImpl implements AccountService {
     @Autowired
     private final AccountRepository accountRepository;
+
+    @Autowired
+    private final AccountProducer<AccountDTO> accountProducer;
 
     @Override
     @Transactional
@@ -42,11 +47,28 @@ class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Track
+    public Account save(Account account) {
+        return accountRepository.save(account);
+    }
+
+    @Override
     @Transactional
     @Track
-    @HandlingResult
-    public Account saveAccount(Account account) {
-        return accountRepository.save(account);
+    public Account findById(Long id) {
+        return accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+    }
+
+    @Override
+    @Track
+    public void sendTosave(Account account) {
+        AccountDTO dto = new AccountDTO(
+                account.getClient().getId(),
+                account.getAccountType(),
+                account.getBalance(),
+                account.getIsDeleted()
+        );
+        accountProducer.send(dto);
     }
 
     @Override

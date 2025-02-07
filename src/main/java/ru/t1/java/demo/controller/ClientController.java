@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogDataSourceError;
 import ru.t1.java.demo.aop.LogExecution;
-import ru.t1.java.demo.aop.LogException;
+import ru.t1.java.demo.aop.Metric;
 import ru.t1.java.demo.exception.ClientException;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.service.ClientService;
@@ -49,6 +49,7 @@ public class ClientController {
     @GetMapping
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 1L)
     public List<Client> getAllClients() {
         return clientService.getAllClients();
     }
@@ -56,6 +57,7 @@ public class ClientController {
     @GetMapping("/{id}")
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 1L)
     public Optional<Client> getClientById(@PathVariable Long id) {
         return clientService.getClientById(id);
     }
@@ -63,6 +65,7 @@ public class ClientController {
     @PostMapping
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 1L)
     public Client createClient(@RequestBody Client client) {
         return clientService.saveClient(client);
     }
@@ -70,6 +73,7 @@ public class ClientController {
     @PutMapping("/{id}")
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 1L)
     public Client updateClient(@PathVariable Long id, @RequestBody Client updatedClient) {
         return clientService.updateClient(id, updatedClient);
     }
@@ -77,6 +81,7 @@ public class ClientController {
     @DeleteMapping("/{id}")
     @LogDataSourceError
     @LogExecution
+    @Metric(threshold = 1L)
     public void deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
     }

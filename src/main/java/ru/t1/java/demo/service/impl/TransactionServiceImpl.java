@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.Track;
+import ru.t1.java.demo.kafka.TransactionProducer;
 import ru.t1.java.demo.model.Transaction;
+import ru.t1.java.demo.model.dto.TransactionDTO;
 import ru.t1.java.demo.repository.TransactionRepository;
 import ru.t1.java.demo.service.TransactionService;
 
@@ -23,6 +25,9 @@ import java.util.Optional;
 public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private final TransactionRepository transactionRepository;
+
+    @Autowired
+    private final TransactionProducer<TransactionDTO> transactionProducer;
 
     @Override
     @Transactional
@@ -44,8 +49,20 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     @Track
     @HandlingResult
-    public Transaction createTransaction(Transaction transaction) {
+    public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
+    }
+
+    @Override
+    @Track
+    public void sendToSave(Transaction transaction) {
+        TransactionDTO dto = new TransactionDTO();
+        dto.setAccountId(transaction.getAccount().getId());
+        dto.setTransactionAmount(transaction.getTransactionAmount());
+        dto.setTransactionTime(transaction.getTransactionTime());
+        dto.setIsDeleted(transaction.getIsDeleted());
+
+        transactionProducer.send(dto);
     }
 
     @Override
