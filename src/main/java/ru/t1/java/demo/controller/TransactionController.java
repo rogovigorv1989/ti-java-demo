@@ -27,7 +27,7 @@ class TransactionController {
     private final TransactionService transactionService;
 
     @Autowired
-    TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

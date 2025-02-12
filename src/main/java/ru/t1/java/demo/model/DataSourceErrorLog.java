@@ -18,9 +18,6 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @AllArgsConstructor
 @Table(name = "data_source_error_log")
 public class DataSourceErrorLog extends AbstractPersistable<Long> {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
 
     @Column(name = "exception_stack_trace", length = 16384)
     private String exceptionStackTrace;

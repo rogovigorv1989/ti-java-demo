@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetricsProducer<T extends Message> {
 
-    @Autowired
-    private KafkaTemplate<String, Message> template;
+    private final KafkaTemplate<String, Message> template;
 
+    @Autowired
     public MetricsProducer(@Qualifier("metricsKafkaTemplate") KafkaTemplate<String, Message> template) {
         this.template = template;
     }

@@ -24,14 +24,14 @@ import java.util.List;
 
 @Slf4j
 @Service
-class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountProducer<AccountDTO> accountProducer;
     private final ClientService clientService;
 
     @Autowired
-    AccountServiceImpl(AccountRepository accountRepository,
+    public AccountServiceImpl(AccountRepository accountRepository,
                        AccountProducer<AccountDTO> accountProducer,
                        ClientService clientService) {
         this.accountRepository = accountRepository;
