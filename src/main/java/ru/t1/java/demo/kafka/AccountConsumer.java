@@ -71,9 +71,4 @@ public class AccountConsumer implements AccountMapper {
         account.setIsDeleted(accountDTO.getIsDeleted());
         return account;
     }
-
-    @Override
-    public AccountDTO toDto(Account account) {
-        return null;
-    }
 }

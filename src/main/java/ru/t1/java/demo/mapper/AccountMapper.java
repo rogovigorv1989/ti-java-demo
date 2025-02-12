@@ -8,6 +8,4 @@ import ru.t1.java.demo.model.dto.AccountDTO;
         componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AccountMapper {
     Account toEntity(AccountDTO accountDTO);
-
-    AccountDTO toDto(Account account);
 }
