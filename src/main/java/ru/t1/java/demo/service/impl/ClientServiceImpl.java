@@ -2,7 +2,6 @@ package ru.t1.java.demo.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
@@ -27,10 +26,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
-    @Autowired
+
     private final ClientRepository clientRepository;
+
+    @Autowired
+    public ClientServiceImpl(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     @PostConstruct
     void init() {
@@ -43,9 +46,6 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-//    @LogExecution
-//    @Track
-//    @HandlingResult
     public List<Client> parseJson() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 

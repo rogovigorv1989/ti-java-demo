@@ -1,15 +1,15 @@
 package ru.t1.java.demo.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.Track;
 import ru.t1.java.demo.exception.TransactionException;
@@ -20,6 +20,7 @@ import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.model.dto.TransactionDTO;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
+import ru.t1.java.demo.service.AccountService;
 import ru.t1.java.demo.service.TransactionService;
 
 import java.time.LocalDateTime;
@@ -31,23 +32,29 @@ import static ru.t1.java.demo.config.Сonstants.T;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
+
     @Value("${t1.kafka.topic.t1_demo_transaction_accept}")
     private String acceptTransactionTopic;
 
-    @Autowired
     private final TransactionRepository transactionRepository;
-
-    @Autowired
     private final TransactionProducer<TransactionDTO> transactionProducer;
-
-    @Autowired
     private final AccountRepository accountRepository;
-
-    @Qualifier("transactionMapperImpl")
-    @Autowired
     private final TransactionMapper transactionMapper;
+    private final AccountService accountService;
+
+    public TransactionServiceImpl(TransactionRepository transactionRepository,
+                                  TransactionProducer<TransactionDTO> transactionProducer,
+                                  AccountRepository accountRepository,
+                                  @Qualifier("transactionMapperImpl") TransactionMapper transactionMapper,
+                                  AccountService accountService) {
+        this.transactionRepository = transactionRepository;
+        this.transactionProducer = transactionProducer;
+        this.accountRepository = accountRepository;
+        this.transactionMapper = transactionMapper;
+        this.accountService = accountService;
+    }
+
 
     @Override
     @Transactional
@@ -123,6 +130,16 @@ public class TransactionServiceImpl implements TransactionService {
                 transactionRepository.save(t);
             });
         });
+    }
+
+    @Override
+    public void createTransaction(String accountId, Transaction transaction) {
+        Account account = accountService.findById(accountId);
+        if (account == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account not found");
+        }
+        transaction.setAccount(account);
+        sendAndSave(transaction);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.t1.java.demo.mapper.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.t1.java.demo.mapper.TransactionMapper;
@@ -9,10 +8,14 @@ import ru.t1.java.demo.model.dto.TransactionDTO;
 import ru.t1.java.demo.service.AccountService;
 
 @Component
-@RequiredArgsConstructor
 public class TransactionMapperImpl implements TransactionMapper {
-    @Autowired
+
     private final AccountService accountService;
+
+    @Autowired
+    public TransactionMapperImpl(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     public Transaction toEntity(TransactionDTO transactionDTO) {
@@ -42,10 +45,5 @@ public class TransactionMapperImpl implements TransactionMapper {
         dto.setStatus(transaction.getStatus());
 
         return dto;
-    }
-
-    @Override
-    public Transaction partialUpdate(TransactionDTO transactionDTO, Transaction transaction) {
-        return null;
     }
 }

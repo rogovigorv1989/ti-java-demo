@@ -15,9 +15,9 @@ import java.util.UUID;
 @Component
 public class ClientProducer<T extends ClientDTO> {
 
-    @Autowired
     private final KafkaTemplate<String, ClientDTO> template;
 
+    @Autowired
     public ClientProducer(@Qualifier("clientKafkaTemplate") KafkaTemplate<String, ClientDTO> template) {
         this.template = template;
     }

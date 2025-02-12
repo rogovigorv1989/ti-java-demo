@@ -1,12 +1,10 @@
 package ru.t1.java.demo.aop;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.Message;
@@ -18,15 +16,16 @@ import ru.t1.java.demo.repository.DataSourceErrorLogRepository;
 @Slf4j
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class LogDataSourceErrorAspect {
 
-    @Autowired
-    @Qualifier("metricsKafkaTemplate")
-    private KafkaTemplate<String, Message> template;
+    private final KafkaTemplate<String, Message> template;
+    private final DataSourceErrorLogRepository errorLogRepository;
 
-    @Autowired
-    private DataSourceErrorLogRepository errorLogRepository;
+    public LogDataSourceErrorAspect(@Qualifier("metricsKafkaTemplate") KafkaTemplate<String, Message> template,
+                                    DataSourceErrorLogRepository errorLogRepository) {
+        this.template = template;
+        this.errorLogRepository = errorLogRepository;
+    }
 
     @Pointcut("@annotation(ru.t1.java.demo.aop.LogDataSourceError)")
     public void logDataSourceErrorPointcut() {}

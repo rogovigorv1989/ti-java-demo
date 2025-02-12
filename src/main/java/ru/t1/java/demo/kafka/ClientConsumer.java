@@ -1,7 +1,7 @@
 package ru.t1.java.demo.kafka;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -14,11 +14,15 @@ import ru.t1.java.demo.service.ClientService;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class ClientConsumer {
 
     private final ClientService clientService;
+
+    @Autowired
+    public ClientConsumer(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @KafkaListener(groupId = "${t1.kafka.consumer.group-id}",
             topics = {"t1_demo_client_registration"},

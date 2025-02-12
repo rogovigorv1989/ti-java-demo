@@ -20,4 +20,6 @@ public interface TransactionService {
     void deleteTransaction(Long id);
 
     void processTransactionResult(List<Transaction> transactions);
+
+    void createTransaction(String accountId, Transaction transaction);
 }

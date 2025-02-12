@@ -1,6 +1,5 @@
 package ru.t1.java.demo.kafka;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,16 +17,18 @@ import ru.t1.java.demo.service.TransactionService;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class TransactionConsumer {
 
-    @Autowired
     private final TransactionService transactionService;
-
-    @Qualifier("transactionMapperImpl")
-    @Autowired
     private final TransactionMapper mapper;
+
+    @Autowired
+    public TransactionConsumer(TransactionService transactionService,
+                               @Qualifier("transactionMapperImpl") TransactionMapper mapper) {
+        this.transactionService = transactionService;
+        this.mapper = mapper;
+    }
 
 
     @KafkaListener(groupId = "${t1.kafka.consumer.group-id}",
