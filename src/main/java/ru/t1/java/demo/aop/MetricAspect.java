@@ -18,9 +18,13 @@ import java.util.Arrays;
 @Aspect
 @Component
 public class MetricAspect {
+
+    private final KafkaTemplate<String, Message> kafkaTemplate;
+
     @Autowired
-    @Qualifier("metricsKafkaTemplate")
-    private KafkaTemplate<String, Message> kafkaTemplate;
+    public MetricAspect(@Qualifier("metricsKafkaTemplate") KafkaTemplate<String, Message> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @Pointcut("@annotation(ru.t1.java.demo.aop.Metric) && @annotation(metricAnnotation)")
     public void metricPointcut(Metric metricAnnotation) {}

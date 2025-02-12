@@ -14,9 +14,10 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class TransactionProducer<T extends TransactionDTO>{
-    @Autowired
+
     private final KafkaTemplate<String, TransactionDTO> template;
 
+    @Autowired
     public TransactionProducer(@Qualifier("transactionKafkaTemplate") KafkaTemplate<String,
             TransactionDTO> kafkaTemplate) {
         this.template = kafkaTemplate;

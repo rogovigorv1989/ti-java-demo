@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.t1.java.demo.model.Transaction;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 public class TransactionDTO {
 
     @JsonProperty("account_id")
-    private Long accountId;
+    private String accountId;
 
     @JsonProperty("transaction_amount")
     private Double transactionAmount;
@@ -27,4 +28,19 @@ public class TransactionDTO {
 
     @JsonProperty("is_deleted")
     private Boolean isDeleted;
+
+    @JsonProperty("client_id")
+    private String clientId;
+
+    @JsonProperty("transaction_id")
+    private String transactionId;
+
+    @JsonProperty("created_At")
+    private LocalDateTime createdAt;
+
+    @JsonProperty("account_balance")
+    private Double accountBalance;
+
+    @JsonProperty("status")
+    private Transaction.Status status;
 }

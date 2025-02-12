@@ -15,9 +15,8 @@ import ru.t1.java.demo.model.Account;
 @Builder
 public class AccountDTO {
 
-
     @JsonProperty("client_id")
-    private Long client;
+    private String client;
 
     @JsonProperty("account_type")
     private Account.AccountType accountType;

@@ -11,12 +11,15 @@ public interface TransactionService {
 
     Optional<Transaction> getTransactionById(Long id);
 
-    Transaction save(Transaction transaction);
+    List<Transaction> requestAndSave(List<Transaction> transactions);
 
-    void sendToSave(Transaction transaction);
+    void sendAndSave(Transaction transaction);
 
     Transaction updateTransaction(Long id, Transaction updatedTransaction);
 
     void deleteTransaction(Long id);
 
+    void processTransactionResult(List<Transaction> transactions);
+
+    void createTransaction(String accountId, Transaction transaction);
 }

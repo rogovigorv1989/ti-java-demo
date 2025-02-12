@@ -1,6 +1,5 @@
 package ru.t1.java.demo.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,13 +23,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/clients")
 public class ClientController {
 
-    @Autowired
     private final ClientService clientService;
+
+    @Autowired
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
+    }
 
     @LogDataSourceError
     @GetMapping(value = "/client")

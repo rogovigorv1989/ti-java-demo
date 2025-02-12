@@ -1,6 +1,5 @@
 package ru.t1.java.demo.kafka;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,15 +17,17 @@ import ru.t1.java.demo.service.ClientService;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class AccountConsumer implements AccountMapper {
 
-    @Autowired
     private final AccountService accountService;
+    private final ClientService clientService;
 
     @Autowired
-    private final ClientService clientService;
+    public AccountConsumer(AccountService accountService, ClientService clientService) {
+        this.accountService = accountService;
+        this.clientService = clientService;
+    }
 
     @KafkaListener(groupId = "${t1.kafka.consumer.group-id}",
             topics = {"${t1.kafka.topic.t1_demo_accounts}"},
@@ -69,15 +70,5 @@ public class AccountConsumer implements AccountMapper {
         account.setBalance(accountDTO.getBalance());
         account.setIsDeleted(accountDTO.getIsDeleted());
         return account;
-    }
-
-    @Override
-    public AccountDTO toDto(Account account) {
-        return null;
-    }
-
-    @Override
-    public Account partialUpdate(AccountDTO clientDto, Account client) {
-        return null;
     }
 }

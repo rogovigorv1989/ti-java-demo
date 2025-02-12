@@ -2,8 +2,12 @@ package ru.t1.java.demo.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.aspectj.lang.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.t1.java.demo.model.DataSourceErrorLog;
@@ -17,8 +21,13 @@ import java.util.List;
 @Component
 @Order(0)
 public class LogAspect {
+
+    private final DataSourceErrorLogRepository errorLogRepository;
+
     @Autowired
-    DataSourceErrorLogRepository errorLogRepository;
+    public LogAspect(DataSourceErrorLogRepository errorLogRepository) {
+        this.errorLogRepository = errorLogRepository;
+    }
 
     @Pointcut("within(ru.t1.java.demo.*)")
     public void loggingMethods() {
